@@ -1,3 +1,11 @@
+/*
+ * aige::SingingRivuleProject
+ * file:freq.hpp
+ * GNU AFFERO GENERAL PUBLIC LICENSE
+ * Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
+ * Everyone is permitted to copy and distribute verbatim copies
+ * of this license document, but changing it is not allowed.
+ */
 #ifndef FREQ_HPP
 #define FREQ_HPP
 #include <sox.h>
