@@ -10,8 +10,10 @@ cd soundtouch && make && sudo make install
 4.执行`pactl load-module module-null-sink`加载模块  
 5.执行`pavucontrol`，在录音中将源改成空输入  
 6.执行qt编译出的程序
+### 操作  
+执行`./vmic.sh`查看帮助
 ## 乐谱  
-在vmic同目录创建notes.txt文件，启动时将自动载入。运行时可通过`killall vmic -10`重新加载乐谱，还可以通过`killall vmic -12`从头播放乐谱  
+在vmic同目录创建notes.txt文件，启动时将自动载入。也可以在运行时通过`./vmic.sh load [url]`载入  
 ## 乐谱格式
 ```
 行数
