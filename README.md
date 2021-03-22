@@ -6,10 +6,10 @@
 git clone https://gitlab.com/soundtouch/soundtouch
 cd soundtouch && make && sudo make install
 ```
-3.用qt打开vmic.pro，编译  
+3.执行`make`编译  
 4.执行`pactl load-module module-null-sink`加载模块  
 5.执行`pavucontrol`，在录音中将源改成空输入  
-6.执行qt编译出的程序
+6.执行`./vmic`  
 ### 操作  
 执行`./vmic.sh`查看帮助
 ## 乐谱  
