@@ -39,9 +39,9 @@ class notes{
                         bzero(buf,sizeof(buf));
                         fgets(buf,sizeof(buf),fp);
                         if(sscanf(buf,"%f %f %d",&time_start,&time_dur,&pitch)>=3){
-                            int start = time_start*sampleRate;
-                            int dur   = time_dur*sampleRate;
-                            int targetPitch = (440 * 8192 * pow(2 , (pitch-57)/12 ))/sampleRate;
+                            int start = time_start*sampleRate/2;
+                            int dur   = time_dur*sampleRate/2;
+                            int targetPitch = (440 * 8192 * pow(2.0 , (pitch-57.0)/12.0 ))/sampleRate;
                             note.push_back(std::make_tuple(start,dur,targetPitch));
                         }
                     }

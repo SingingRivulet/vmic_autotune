@@ -121,7 +121,7 @@ int main(int argc,const char *argv[]){
                            sampleTime/sampleRate,
                            f.pitches.size(),
                            targetPitch,
-                           f.pitchShift,
+                           f.shiftOcatve,
                            notes.notes_index);
                     fflush(stdout);
 

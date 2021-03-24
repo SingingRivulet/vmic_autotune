@@ -15,6 +15,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <memory.h>
+#include "kalman.h"
 
 #define MIN_FREQ 20
 namespace vmic{
@@ -420,7 +421,7 @@ class freqProcessor{
         std::set<int> pitches;
 
         int pitch;
-        float pitchShift;
+        scalar_kalman_t kalmanFilter;
 
         freqProcessor(){
             for(int i=0;i<16;++i){
@@ -430,6 +431,8 @@ class freqProcessor{
             for(int i=0;i<8192;++i) {
                 window[i] = 0.5 * (1.0 - cos(2.0 * M_PI * i / (8192.0 - 1.0)));
             }
+            shiftOcatve = 0;
+            scalar_kalman_init(&kalmanFilter ,1,1,1,1);
         }
         ~freqProcessor(){
             for(auto it:buffer){
@@ -485,7 +488,7 @@ class freqProcessor{
             pitch = maxPosi;
             //printf("\n%d\n",pitches.size());
         }
-#define log2 0.30102999566398
+#define log2 0.6931471805599453
         int getNearPitch(int f1){
             if(!pitches.empty()){
                 auto it = pitches.upper_bound(f1);//获取大于的第一个元素
@@ -509,33 +512,22 @@ class freqProcessor{
             }
             return -1;
         }
+        float shiftOcatve;
+        float pitchShift;
         float getPitchShift(int f1){
             if(pitch>MIN_FREQ){
-                /*
-                int f[3];
-                //上下八度查找
-                f[0]=f1;
-                f[1]=f1>>1;
-                f[2]=f1<<1;
-                float min_d = fabs(log((float)pitch / (float)f1) / log2);
-                int min_i = 0;
-                for(int i=1;i<3;++i){
-                    float d = fabs(log((float)pitch / (float)f[i]) / log2);
-                    if(d<min_d){
-                        min_d = d;
-                        min_i = i;
-                    }
-                }
-                float targf = f[min_i];
-                pitchShift = (((float)targf)/((float)pitch));
-                return pitchShift;
-                */
                 int p = getNearPitch(f1);
                 if(p>0){
                     pitchShift = (((float)f1)/((float)p));
+                    shiftOcatve = log(pitchShift) / log2;
+                    shiftOcatve = (float)shiftOcatve - floor(shiftOcatve);
+                    if(shiftOcatve>0.5){
+                        shiftOcatve = -(1.0 - shiftOcatve);
+                    }
+                    pitchShift = pow(2.0,shiftOcatve);
                 }
             }
-            return this->pitchShift;
+            return scalar_kalman(&kalmanFilter,this->pitchShift);
         }
         void clearBuffer(){
             for(auto & it:buffer){

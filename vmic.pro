@@ -5,8 +5,10 @@ CONFIG -= qt
 
 LIBS += -Bstatic -lsox -lSoundTouch
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    kalman.cpp
 
 HEADERS += \
     freq.hpp \
-    note.hpp
+    note.hpp \
+    kalman.h
