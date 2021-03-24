@@ -15,7 +15,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <memory.h>
-#include "kalman.h"
+#include "kalman.hpp"
 
 #define MIN_FREQ 20
 namespace vmic{
@@ -432,7 +432,7 @@ class freqProcessor{
                 window[i] = 0.5 * (1.0 - cos(2.0 * M_PI * i / (8192.0 - 1.0)));
             }
             shiftOcatve = 0;
-            scalar_kalman_init(&kalmanFilter ,1,1,1,1);
+            scalar_kalman_init(&kalmanFilter ,1,1,0.01,1);
         }
         ~freqProcessor(){
             for(auto it:buffer){
@@ -514,7 +514,7 @@ class freqProcessor{
         }
         float shiftOcatve;
         float pitchShift;
-        float getPitchShift(int f1){
+        void getPitchShift(int f1){
             if(pitch>MIN_FREQ){
                 int p = getNearPitch(f1);
                 if(p>0){
@@ -527,6 +527,8 @@ class freqProcessor{
                     pitchShift = pow(2.0,shiftOcatve);
                 }
             }
+        }
+        float getPitchShiftCache(){
             return scalar_kalman(&kalmanFilter,this->pitchShift);
         }
         void clearBuffer(){

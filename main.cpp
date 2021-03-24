@@ -100,7 +100,6 @@ int main(int argc,const char *argv[]){
                     for(int i=0;i<512;++i){
                         sampleBuffer_f[i] = ((float)sampleBuffer_i[i])/((float)0x7fffffff);
                     }
-                    st->putSamples(sampleBuffer_f,512);
 
                     int targetPitch = notes.getNote(sampleTime);
                     //如果目标改变了，清空频谱
@@ -110,11 +109,21 @@ int main(int argc,const char *argv[]){
                     lastTargetPitch = targetPitch;
                     //获取频谱
                     f.pushBuffer(sampleBuffer_f);
-                    //设置变调目标
-                    if(targetPitch>0){
-                        st->setPitch(f.getPitchShift(targetPitch));
-                    }else{
-                        st->setPitch(1);
+
+                    for(int i=0;i<16;++i){
+                        //设置变调目标
+                        if(targetPitch>0){
+                            f.getPitchShift(targetPitch);
+                            st->setPitch(f.getPitchShiftCache());
+                        }else{
+                            st->setPitch(1);
+                        }
+                        st->putSamples(sampleBuffer_f+i*32 , 32);
+                        st->receiveSamples(sampleBuffer_f+i*32 , 32);
+                    }
+
+                    for(int i=0;i<512;++i){
+                        sampleBuffer_i[i] = sampleBuffer_f[i]*0x7fffffff;
                     }
 
                     printf("time=%-8d pitchNum=%-5lu target=%-5d shift=%-8f index=%-4d\r",
@@ -126,10 +135,6 @@ int main(int argc,const char *argv[]){
                     fflush(stdout);
 
                     sampleTime += len;
-                    st->receiveSamples(sampleBuffer_f,len);
-                    for(int i=0;i<512;++i){
-                        sampleBuffer_i[i] = sampleBuffer_f[i]*0x7fffffff;
-                    }
                     sox_write(out,sampleBuffer_i,len);
                 }
                 break;
